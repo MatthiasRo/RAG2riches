@@ -85,3 +85,13 @@ secrets.json
 # OS
 .DS_Store
 Thumbs.db
+
+IMPLEMENTATION_SUMMARY.md
+
+rag2riches.code-workspace
+
+ragoff.code-workspace
+
+*.png
+
+*.webm

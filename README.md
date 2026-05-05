@@ -14,7 +14,7 @@ In traditional RAG, you retrieve globally and then filter. RAG2riches does the o
 4. Generate a response grounded **only** in that cell's text
 5. Export responses for downstream analysis
 
-This approach is natural for social science researchers who want to compare how different groups, time periods, or sources discuss the same topic.
+This approach is natural for social science researchers who want to compare how different groups, time periods, or sources discuss the same issue.
 
 ## Example: Party-Year Comparison
 
@@ -44,13 +44,13 @@ RAG2riches is not yet published on PyPI. Install it directly from the GitHub rep
 #### Option A: Install via Git URL
 
 ```bash
-pip install git+https://github.com/yourusername/rag2riches.git
+pip install git+https://github.com/MatthiasRo/RAG2riches.git
 ```
 
 #### Option B: Clone and Install (Recommended for Development)
 
 ```bash
-git clone https://github.com/yourusername/rag2riches.git
+git clone https://github.com/MatthiasRo/RAG2riches.git
 cd rag2riches
 pip install -e .
 ```
@@ -359,18 +359,30 @@ I welcome contributions! Please:
 
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
+Apache License 2.0. See [LICENSE](LICENSE) for details.
 
 ## Citation
 
 If you use RAG2riches in research, please cite:
+
+Roesti, Matthias, From RAGs to (feature) Riches - An Efficient Pipeline for Exploratory Text Analysis (June 29, 2025). Available at SSRN: https://ssrn.com/abstract=5331899 or http://dx.doi.org/10.2139/ssrn.5331899
 
 ```bibtex
 @software{roesti2024rag2riches,
   title = {RAG2riches: Comparative Retrieval-Augmented Generation for Social Science},
   author = {Roesti, Matthias},
   year = {2026},
-  url = {https://github.com/yourusername/rag2riches}
+    url = {https://github.com/MatthiasRo/RAG2riches}
+}
+
+@article{roesti2025rags,
+    title = {From RAGs to (feature) Riches - An Efficient Pipeline for Exploratory Text Analysis},
+    author = {Roesti, Matthias},
+    year = {2025},
+    month = jun,
+    url = {https://ssrn.com/abstract=5331899},
+    doi = {10.2139/ssrn.5331899},
+    note = {Available at SSRN}
 }
 ```
 
@@ -388,8 +400,8 @@ Use RAG2riches as part of a rigorous research workflow, not as a replacement for
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/rag2riches/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/rag2riches/discussions)
+- **Issues**: [GitHub Issues](https://github.com/MatthiasRo/RAG2riches/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/MatthiasRo/RAG2riches/discussions)
 - **Email**: matthias_roesti@brown.edu
 
 ## Acknowledgments

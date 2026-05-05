@@ -8,7 +8,7 @@ version = "0.1.0a1"
 description = "Comparative retrieval-augmented generation for social science research"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = {text = "Apache-2.0"}
 authors = [
     {name = "Matthias Roesti", email = "m.roesti@brown.edu"}
 ]
@@ -23,7 +23,7 @@ keywords = [
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -66,10 +66,10 @@ all = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/yourusername/rag2riches"
+"Homepage" = "https://github.com/MatthiasRo/RAG2riches"
 "Documentation" = "https://rag2riches.readthedocs.io"
-"Repository" = "https://github.com/yourusername/rag2riches.git"
-"Bug Tracker" = "https://github.com/yourusername/rag2riches/issues"
+"Repository" = "https://github.com/MatthiasRo/RAG2riches.git"
+"Bug Tracker" = "https://github.com/MatthiasRo/RAG2riches/issues"
 
 [tool.setuptools]
 packages = ["rag2riches", "rag2riches.vectorstores", "rag2riches.ui"]

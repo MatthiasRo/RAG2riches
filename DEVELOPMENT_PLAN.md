@@ -312,7 +312,7 @@ examples/
 
 .gitignore                       # Python + RAG-specific ignores
 .env.example                     # Template for environment variables
-LICENSE                          # MIT or Apache 2.0
+LICENSE                          # Apache 2.0
 README.md                        # Main entry point
 pyproject.toml                   # Build config, dependencies
 CHANGELOG.md                     # Version history

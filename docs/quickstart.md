@@ -14,7 +14,7 @@ RAG2riches is not yet published on PyPI. Install it from the GitHub repository.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/rag2riches.git
+git clone https://github.com/MatthiasRo/RAG2riches.git
 ```
 
 ### 2. Navigate to Project Directory

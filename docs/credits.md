@@ -92,7 +92,7 @@ Roesti, Matthias, From RAGs to (feature) Riches - An Efficient Pipeline for Expl
   title = {RAG2riches: Comparative Retrieval-Augmented Generation for Social Science},
   author = {Roesti, Matthias},
   year = {2024},
-  url = {https://github.com/yourusername/rag2riches}
+  url = {https://github.com/MatthiasRo/RAG2riches}
 }
 
 @article{roesti2025rags,
@@ -122,7 +122,7 @@ See the main [README](../README.md) for contribution guidelines.
 
 ## License
 
-RAG2riches is licensed under the **MIT License**, which permits free use, modification, and distribution in both open-source and commercial projects. See [LICENSE](../LICENSE) for details.
+RAG2riches is licensed under the **Apache License 2.0**, which permits free use, modification, and distribution in both open-source and commercial projects. See [LICENSE](../LICENSE) for details.
 
 ## Disclaimer
 
