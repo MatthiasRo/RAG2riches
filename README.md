@@ -41,17 +41,19 @@ Each response is grounded only in speeches from that specific party and year.
 
 RAG2riches is not yet published on PyPI. Install it directly from the GitHub repository.
 
-#### Option A: Install via Git URL
+#### Option A: Install via Git URL (WORKS FOR PROGRAMMATIC USE - CHOOSE OPTION B FOR STREAMLIT UI APP VERSION)
 
 ```bash
 pip install git+https://github.com/MatthiasRo/RAG2riches.git
 ```
 
-#### Option B: Clone and Install (Recommended for Development)
+#### Option B: Clone and Install (Recommended for Development - USE FOR STREAMLIT UI)
+
+Note: these instructions refer to a Windows machine; other operating systems may need some adjustments. Make sure you clone the Repo into a folder you want to use for your project, and to run the pip install command from this root folder. If you get an error like  "neither 'setup.py' nor 'pyproject.toml' found", then your console commands are most likely not executed in the right directory.
 
 ```bash
 git clone https://github.com/MatthiasRo/RAG2riches.git
-cd rag2riches
+cd ./RAG2riches
 pip install -e .
 ```
 
@@ -217,6 +219,8 @@ For a guided walkthrough, see [examples/streamlit_demo_instructions.md](examples
 
 ## Supported File Formats
 
+Note: Expect inferior quality from PDFs, I recommend precessing PDFs separately. 
+
 | Format | Usage | Example |
 |--------|-------|---------|
 | CSV | Tabular data with text column | `pipeline.from_csv(path, text_column="text", metadata_columns=[...])` |
@@ -318,14 +322,13 @@ Data Input (CSV, TXT, PDF)
 - Sentence-aware chunking
 - Async batch API support
 - Advanced retrieval strategies (BM25, hybrid search, reranking)
+- Enhanced documentation and explicit integration of more LLM endpoints
+- Allow user easier access to retrieved chunk information for evaluation
 
 ### 🔮 v0.3+
-- PDF ingestion with page-level metadata
-- Sentence-aware chunking
-- Advanced retrieval (BM25, hybrid search, reranking)
-- Streamlit exploratory UI
-- Async batch API support
+- Streamlit UI with enhanced functionality
 - Multi-language support
+- Integrated evaluation and benchmarking suite
 
 ## Documentation
 
