@@ -25,9 +25,11 @@ __version__ = "0.1.0a1"
 __author__ = "Matthias Roesti"
 __license__ = "MIT"
 
+from .batch_embeddings import BatchEmbeddingManager, BatchEmbeddingState, BatchIngestionResult
 from .cleaning import clean_documents, default_clean_text
 from .chunking import chunk_text, chunks_from_documents
 from .config import (
+    BatchEmbeddingConfig,
     ChunkingConfig,
     CleaningConfig,
     EmbeddingConfig,
@@ -71,6 +73,9 @@ __all__ = [
     "Chunk",
     "Cell",
     "EmbeddingRecord",
+    "BatchEmbeddingManager",
+    "BatchEmbeddingState",
+    "BatchIngestionResult",
     "QuerySpec",
     "ResponseRecord",
     "Embedder",
@@ -98,6 +103,7 @@ __all__ = [
     "CleaningConfig",
     "ChunkingConfig",
     "EmbeddingConfig",
+    "BatchEmbeddingConfig",
     "VectorStoreConfig",
     "RetrievalConfig",
     "GenerationConfig",

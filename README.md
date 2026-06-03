@@ -207,12 +207,14 @@ The UI lets you:
 - Load a CSV file or connect to an existing LanceDB database
 - Choose the text column and metadata columns for CSV input
 - Set chunk size and overlap, with defaults of 750 characters and 100 overlap
-- Choose an embedding model, with `openai/text-embedding-3-small` as the default
+- Choose an embedding model from presets (OpenAI, Google, Anthropic, Voyage AI, open-weight) or enter a custom one
 - Optionally reuse an existing vector database instead of embedding from scratch
 - Select retrieval method and number of passages to retrieve
 - Choose comparison cell fields such as `party`, `year`, or `firm`, `month`
+- Apply subset filters (e.g., year >= 2016, company in Coca Cola/Pepsi). Values auto-parse; wrap text in quotes to force strings
 - Choose the generation model, with `gpt-4o-mini` as the default
 - Run a query across cells and watch cell-level results appear as the run proceeds in a table
+- Expand response cards to inspect the retrieved chunks and grounded context
 - Export the full responses table to CSV or JSON
 
 For a guided walkthrough, see [examples/streamlit_demo_instructions.md](examples/streamlit_demo_instructions.md).

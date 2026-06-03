@@ -119,6 +119,20 @@ class TestChunksFromDocuments:
         chunk_ids = [c.chunk_id for c in chunks]
         assert len(chunk_ids) == len(set(chunk_ids))
 
+    def test_chunk_ids_are_stable(self):
+        """Test that chunk IDs are deterministic for the same input."""
+        doc = Document(
+            document_id="doc1",
+            source_path="test.csv",
+            text="a" * 1000,
+            metadata={},
+        )
+
+        first = chunks_from_documents([doc], chunk_size=200, chunk_overlap=50)
+        second = chunks_from_documents([doc], chunk_size=200, chunk_overlap=50)
+
+        assert [c.chunk_id for c in first] == [c.chunk_id for c in second]
+
     def test_chunks_have_correct_indices(self):
         """Test that chunk_index is correct."""
         doc = Document(

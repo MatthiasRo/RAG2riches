@@ -11,6 +11,9 @@ from pathlib import Path
 from typing import Any, Iterable
 from uuid import uuid4
 
+from loguru import logger
+
+from .batch_embeddings import BatchEmbeddingManager
 from .chunking import chunks_from_documents
 from .cleaning import clean_documents
 from .compare import ComparativeRunner
@@ -45,6 +48,8 @@ class RAG2richesPipeline:
         metadata_columns: list[str] | None = None,
         document_id_column: str | None = None,
         auto_generate_ids: bool = True,
+        encoding: str = "utf-8",
+        low_memory: bool = False,
     ) -> "RAG2richesPipeline":
         """Create a pipeline from a CSV file."""
         ingester = CSVIngester(
@@ -52,6 +57,8 @@ class RAG2richesPipeline:
             metadata_columns=metadata_columns,
             document_id_column=document_id_column,
             auto_generate_ids=auto_generate_ids,
+            encoding=encoding,
+            low_memory=low_memory,
         )
         documents = ingester.ingest(path)
         return cls(documents=documents)
@@ -143,6 +150,88 @@ class RAG2richesPipeline:
                 for chunk_id, vector in zip(chunk_ids, vectors)
             ]
         return self
+
+    def embed_batch(
+        self,
+        model: str,
+        vector_store_path: str | Path,
+        table_name: str = "chunks",
+        output_dir: str | Path = ".batch",
+        provider: str = "openai",
+        completion_window: str = "24h",
+        skip_existing: bool = True,
+        submit: bool = True,
+        poll: bool = False,
+        queue_limit: int | None = None,
+        stop_on_queue_limit: bool = True,
+        cache_chunk_ids: bool = True,
+        full_scan_cache: bool = False,
+        show_progress: bool = True,
+        download_max_retries: int = 5,
+        download_backoff_seconds: float = 5.0,
+        download_backoff_max: float = 60.0,
+        batch_metadata: dict[str, Any] | None = None,
+        batch_api_key: str | None = None,
+        batch_api_base: str | None = None,
+        batch_organization: str | None = None,
+        batch_extra_body: dict[str, Any] | None = None,
+        embedder: Embedder | None = None,
+        batch_model: str | None = None,
+        batch_size: int = 32,
+        **embedder_kwargs: Any,
+    ) -> BatchEmbeddingManager:
+        """Prepare and optionally submit batch embedding requests.
+
+        Returns a BatchEmbeddingManager that can be reused to poll and ingest later.
+        """
+        if not self.chunks:
+            raise ValueError("No chunks available. Run chunk() first.")
+
+        manager = BatchEmbeddingManager(
+            vector_store_path=vector_store_path,
+            table_name=table_name,
+            output_dir=output_dir,
+            provider=provider,
+            model=batch_model or model,
+            completion_window=completion_window,
+            queue_limit=queue_limit,
+            stop_on_queue_limit=stop_on_queue_limit,
+            cache_chunk_ids=cache_chunk_ids,
+            full_scan_cache=full_scan_cache,
+            download_max_retries=download_max_retries,
+            download_backoff_seconds=download_backoff_seconds,
+            download_backoff_max=download_backoff_max,
+            api_key=batch_api_key,
+            api_base=batch_api_base,
+            organization=batch_organization,
+            extra_body=batch_extra_body,
+        )
+
+        jsonl_paths = manager.prepare_requests(
+            self.chunks,
+            skip_existing=skip_existing,
+            show_progress=show_progress,
+            queue_limit=queue_limit,
+            stop_on_queue_limit=stop_on_queue_limit,
+        )
+        if submit:
+            batch_ids = manager.submit_batches(jsonl_paths, metadata=batch_metadata)
+            logger.info(f"Submitted {len(batch_ids)} batch jobs")
+
+        if poll:
+            manager.poll_and_ingest(manager.last_batch_ids or None)
+
+        if embedder is None:
+            embedder = LiteLLMEmbedder(
+                model=model,
+                batch_size=batch_size,
+                **embedder_kwargs,
+            )
+
+        self.embedder = embedder
+        self.vector_store = manager.vector_store
+        self.retriever = Retriever(embedder=self.embedder, vector_store=self.vector_store)
+        return manager
 
     def index(
         self,

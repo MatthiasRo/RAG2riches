@@ -20,6 +20,8 @@ class IngestionConfig(BaseModel):
     directory_path: Optional[str] = None  # For TXT directory ingestion
     document_id_column: Optional[str] = None  # Use existing column if present
     auto_generate_ids: bool = True
+    encoding: str = "utf-8"  # For CSV only
+    low_memory: bool = False  # For CSV only
 
 
 class CleaningConfig(BaseModel):
@@ -52,6 +54,22 @@ class EmbeddingConfig(BaseModel):
     cache_dir: Path = Field(default_factory=lambda: Path(".cache/embeddings"))
     resume: bool = True
     max_retries: int = 3
+
+
+class BatchEmbeddingConfig(BaseModel):
+    """Configuration for batch embedding workflows."""
+
+    provider: Literal["openai", "litellm"] = "openai"
+    completion_window: str = "24h"
+    output_dir: Path = Field(default_factory=lambda: Path(".batch"))
+    table_name: str = "chunks"
+    registry_table_name: str = "chunk_registry"
+    batch_table_name: str = "batch_jobs"
+    max_lines_per_jsonl: int = 50_000
+    max_bytes_per_jsonl: int = 180 * 1024 * 1024
+    poll_seconds: int = 20
+    chunk_lookup_batch_size: int = 500
+    ingest_batch_size: int = 500
 
 
 class VectorStoreConfig(BaseModel):
@@ -96,6 +114,7 @@ class PipelineConfig(BaseModel):
     cleaning: CleaningConfig = Field(default_factory=CleaningConfig)
     chunking: ChunkingConfig = Field(default_factory=ChunkingConfig)
     embedding: EmbeddingConfig = Field(default_factory=EmbeddingConfig)
+    batch_embedding: BatchEmbeddingConfig = Field(default_factory=BatchEmbeddingConfig)
     vector_store: VectorStoreConfig = Field(default_factory=VectorStoreConfig)
     retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
     generation: GenerationConfig = Field(default_factory=GenerationConfig)

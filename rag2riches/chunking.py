@@ -4,8 +4,9 @@ Text chunking utilities for RAG2riches.
 Provides character-level chunking with overlap and allows custom chunking functions.
 """
 
+import hashlib
+from collections import Counter
 from typing import Callable, Optional
-from uuid import uuid4
 
 from loguru import logger
 
@@ -75,6 +76,16 @@ def chunks_from_documents(
     if chunk_fn is None:
         chunk_fn = lambda text: chunk_text(text, chunk_size, chunk_overlap)
 
+    duplicates = _find_duplicate_document_ids(documents)
+    if duplicates:
+        sample = ", ".join(duplicates[:5])
+        logger.warning(
+            "Detected %d duplicate document_id values. "
+            "This can cause chunk_id collisions. Sample: %s",
+            len(duplicates),
+            sample,
+        )
+
     logger.info(f"Chunking {len(documents)} documents")
     all_chunks = []
     total_chunks = 0
@@ -95,7 +106,7 @@ def chunks_from_documents(
 
             # Create chunk with inherited metadata
             chunk = Chunk(
-                chunk_id=str(uuid4()),
+                chunk_id=_stable_chunk_id(doc.document_id, chunk_idx, chunk_text_value),
                 document_id=doc.document_id,
                 text=chunk_text_value,
                 metadata=doc.metadata.copy(),  # Inherit document metadata
@@ -109,4 +120,20 @@ def chunks_from_documents(
 
     logger.info(f"Created {total_chunks} chunks from {len(documents)} documents")
     return all_chunks
+
+
+def _stable_chunk_id(document_id: str, chunk_index: int, text: str) -> str:
+    h = hashlib.sha256()
+    h.update(str(document_id).encode("utf-8", errors="ignore"))
+    h.update(b"\x1f")
+    h.update(str(chunk_index).encode("utf-8"))
+    h.update(b"\x1f")
+    h.update(str(text).encode("utf-8", errors="ignore"))
+    return h.hexdigest()
+
+
+def _find_duplicate_document_ids(documents: list[Document]) -> list[str]:
+    counts = Counter(str(doc.document_id) for doc in documents)
+    duplicates = [doc_id for doc_id, count in counts.items() if count > 1]
+    return sorted(duplicates)
 

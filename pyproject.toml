@@ -53,6 +53,9 @@ dev = [
 llm = [
     "litellm>=1.0.0",
 ]
+batch = [
+    "openai>=1.0",
+]
 vector = [
     "lancedb>=0.1.0",
 ]
@@ -61,6 +64,7 @@ ui = [
 ]
 all = [
     "litellm>=1.0.0",
+    "openai>=1.0",
     "lancedb>=0.1.0",
     "streamlit>=1.28.0",
 ]

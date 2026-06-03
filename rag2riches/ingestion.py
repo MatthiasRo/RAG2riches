@@ -23,6 +23,8 @@ class CSVIngester:
         metadata_columns: Optional[list[str]] = None,
         document_id_column: Optional[str] = None,
         auto_generate_ids: bool = True,
+        encoding: str = "utf-8",
+        low_memory: bool = False,
     ):
         """Initialize CSV ingester.
 
@@ -31,11 +33,15 @@ class CSVIngester:
             metadata_columns: List of columns to include as metadata
             document_id_column: Column to use as document_id (optional)
             auto_generate_ids: If True, generate IDs for rows without ID column
+            encoding: Text encoding for CSV input (defaults to utf-8)
+            low_memory: Pandas low_memory flag (defaults to False)
         """
         self.text_column = text_column
         self.metadata_columns = metadata_columns or []
         self.document_id_column = document_id_column
         self.auto_generate_ids = auto_generate_ids
+        self.encoding = encoding
+        self.low_memory = low_memory
 
     def ingest(self, path: str | Path) -> list[Document]:
         """Ingest documents from CSV file.
@@ -52,7 +58,7 @@ class CSVIngester:
         if not path.exists():
             raise FileNotFoundError(f"CSV file not found: {path}")
 
-        df = pd.read_csv(path)
+        df = pd.read_csv(path, encoding=self.encoding, low_memory=self.low_memory)
         logger.info(f"Loaded {len(df)} rows from {path.name}")
 
         if self.text_column not in df.columns:
@@ -232,6 +238,8 @@ def ingest_documents(
     text_column: Optional[str] = None,
     metadata_columns: Optional[list[str]] = None,
     document_id_column: Optional[str] = None,
+    encoding: str = "utf-8",
+    low_memory: bool = False,
 ) -> list[Document]:
     """Convenience function to ingest documents in any supported format.
 
@@ -241,6 +249,8 @@ def ingest_documents(
         text_column: For CSV: column containing text
         metadata_columns: Columns to include as metadata
         document_id_column: Column to use as document IDs
+        encoding: Text encoding for CSV input (defaults to utf-8)
+        low_memory: Pandas low_memory flag (defaults to False)
 
     Returns:
         List of Document objects
@@ -256,6 +266,8 @@ def ingest_documents(
             text_column=text_column,
             metadata_columns=metadata_columns,
             document_id_column=document_id_column,
+            encoding=encoding,
+            low_memory=low_memory,
         )
         return ingester.ingest(path)
 

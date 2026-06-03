@@ -82,10 +82,84 @@ class InMemoryVectorStore(VectorStore):
     def _matches_filter(self, chunk: Chunk, filter: dict[str, Any] | None) -> bool:
         if not filter:
             return True
+        if "__clauses__" in filter:
+            clauses = filter.get("__clauses__", [])
+            logic = str(filter.get("__logic__", "and")).strip().lower()
+            results = [self._matches_clause(chunk, clause) for clause in clauses]
+            return any(results) if logic == "or" else all(results)
+
         for key, value in filter.items():
-            if chunk.metadata.get(key) != value:
+            if str(key).startswith("__"):
+                continue
+            if not self._matches_value(chunk.metadata.get(key), value):
                 return False
         return True
+
+    def _matches_clause(self, chunk: Chunk, clause: dict[str, Any]) -> bool:
+        field = clause.get("field")
+        if not field:
+            return True
+        value = chunk.metadata.get(field)
+        operator = self._normalize_operator(str(clause.get("op", "=")).strip())
+        expected = clause.get("value")
+        return self._evaluate_clause(value, operator, expected)
+
+    def _matches_value(self, actual: Any, expected: Any) -> bool:
+        if isinstance(expected, dict) and expected.get("op") is not None:
+            operator = self._normalize_operator(str(expected.get("op", "=")).strip())
+            return self._evaluate_clause(actual, operator, expected.get("value"))
+        if isinstance(expected, (list, tuple, set)):
+            return actual in expected
+        return actual == expected
+
+    def _evaluate_clause(self, actual: Any, operator: str, expected: Any) -> bool:
+        if operator == "is null":
+            return actual is None
+        if operator == "is not null":
+            return actual is not None
+        if actual is None:
+            return False
+        if operator == "in":
+            if not isinstance(expected, (list, tuple, set)):
+                return False
+            return actual in expected
+        if operator == "not in":
+            if not isinstance(expected, (list, tuple, set)):
+                return False
+            return actual not in expected
+        if operator == "=":
+            return actual == expected
+        if operator == "!=":
+            return actual != expected
+        try:
+            if operator == ">":
+                return actual > expected
+            if operator == ">=":
+                return actual >= expected
+            if operator == "<":
+                return actual < expected
+            if operator == "<=":
+                return actual <= expected
+        except Exception:
+            return False
+        return False
+
+    def _normalize_operator(self, operator: str) -> str:
+        normalized = operator.strip().lower()
+        mapping = {
+            "==": "=",
+            "eq": "=",
+            "neq": "!=",
+            "ne": "!=",
+            "gt": ">",
+            "gte": ">=",
+            "lt": "<",
+            "lte": "<=",
+            "notin": "not in",
+            "isnull": "is null",
+            "isnotnull": "is not null",
+        }
+        return mapping.get(normalized, normalized)
 
     def _cosine_similarity(self, a: list[float], b: list[float]) -> float:
         if len(a) != len(b):
