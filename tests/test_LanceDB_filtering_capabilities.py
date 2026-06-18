@@ -1,7 +1,10 @@
 from pathlib import Path
 
-import lancedb
 import pytest
+
+pytest.importorskip("lancedb")
+
+import lancedb
 
 DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "lanceDB_PR"
 TABLE_NAME = "chunk_registry"
