@@ -200,6 +200,10 @@ Launch it with:
 streamlit run rag2riches/ui/streamlit_app.py
 ```
 
+
+![Animated demonstration of the application](assets/RAG2riches_demo.gif)
+
+
 Note: The Streamlit app will automatically load a `.env` file from the project root if present. To test OpenAI embeddings/generation for example, copy `.env.example` to `.env` and add your `OPENAI_API_KEY=sk-...` before launching the app. **Never** commit or share your personal `.env` file if you don't want others to use your API tokens.
 
 The UI lets you:
