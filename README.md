@@ -200,7 +200,7 @@ Launch it with:
 streamlit run rag2riches/ui/streamlit_app.py
 ```
 
-Note: The Streamlit app will automatically load a `.env` file from the project root if present. To test OpenAI embeddings/generation, copy `.env.example` to `.env` and add your `OPENAI_API_KEY=sk-...` before launching the app.
+Note: The Streamlit app will automatically load a `.env` file from the project root if present. To test OpenAI embeddings/generation for example, copy `.env.example` to `.env` and add your `OPENAI_API_KEY=sk-...` before launching the app. **Never** commit or share your personal `.env` file if you don't want others to use your API tokens.
 
 The UI lets you:
 
@@ -267,7 +267,7 @@ Never commit `.env` files. See `.env.example` for templates.
 
 ## Data Privacy
 
-- RAG2riches does **not** upload your documents by default
+- RAG2riches allows for a fully local data and computation setup suitable for sensitive data
 - Local processing: Chunking, metadata handling, and local embeddings are all done client-side
 - Optional remote services: Only if you explicitly configure external LLM/embedding providers
 - Store credentials in environment variables, never in code
@@ -373,7 +373,7 @@ If you use RAG2riches in research, please cite:
 Roesti, Matthias, From RAGs to (feature) Riches - An Efficient Pipeline for Exploratory Text Analysis (June 29, 2025). Available at SSRN: https://ssrn.com/abstract=5331899 or http://dx.doi.org/10.2139/ssrn.5331899
 
 ```bibtex
-@software{roesti2024rag2riches,
+@software{roesti2026rag2riches,
   title = {RAG2riches: Comparative Retrieval-Augmented Generation for Social Science},
   author = {Roesti, Matthias},
   year = {2026},

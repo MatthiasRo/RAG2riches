@@ -85,6 +85,7 @@ class BatchEmbeddingState:
     provider: str
     model: str
     completion_window: str
+    poll_completion_window: str | None
     max_lines_per_jsonl: int
     max_bytes_per_jsonl: int
     poll_seconds: int
@@ -559,6 +560,7 @@ class BatchEmbeddingManager:
         provider: str = "openai",
         model: str = "openai/text-embedding-3-small",
         completion_window: str = "24h",
+        poll_completion_window: str | None = None,
         max_lines_per_jsonl: int = 5_000, # technically can go up to 50k, but this creates large files that may cause server-side timeouts and other headaches
         max_bytes_per_jsonl: int = 20 * 1024 * 1024,
         poll_seconds: int = 20,
@@ -585,6 +587,7 @@ class BatchEmbeddingManager:
             provider=provider,
             model=model,
             completion_window=completion_window,
+            poll_completion_window=poll_completion_window or completion_window,
             max_lines_per_jsonl=max_lines_per_jsonl,
             max_bytes_per_jsonl=max_bytes_per_jsonl,
             poll_seconds=poll_seconds,
@@ -636,6 +639,7 @@ class BatchEmbeddingManager:
             provider=state.provider,
             model=state.model,
             completion_window=state.completion_window,
+            poll_completion_window=state.poll_completion_window,
             max_lines_per_jsonl=state.max_lines_per_jsonl,
             max_bytes_per_jsonl=state.max_bytes_per_jsonl,
             poll_seconds=state.poll_seconds,
@@ -905,13 +909,16 @@ class BatchEmbeddingManager:
             organization=self.state.organization,
         )
         poll_seconds = poll_seconds or self.state.poll_seconds
-        completion_window_seconds = _parse_completion_window_seconds(
-            self.state.completion_window
+        poll_window_seconds = _parse_completion_window_seconds(
+            self.state.poll_completion_window or self.state.completion_window
         )
+
+        total_batches = len(self.registry.pending_batch_ids(batch_ids))
 
         results: list[BatchIngestionResult] = []
         skipped_downloads_this_run: set[str] = set()
         skipped_due_to_window: set[str] = set()
+        ingested_batches = 0
         while True:
             pending = [
                 batch_id
@@ -928,18 +935,18 @@ class BatchEmbeddingManager:
                 latest = self.registry.latest_batch_record(batch_id)
                 if (
                     latest
-                    and completion_window_seconds is not None
+                    and poll_window_seconds is not None
                     and latest.created_at
-                    and now_ts > latest.created_at + completion_window_seconds
+                    and now_ts > latest.created_at + poll_window_seconds
                 ):
                     skipped_due_to_window.add(batch_id)
                     logger.warning(
                         "Stopping polling for batch {} because completion window ({}) elapsed. "
                         "created_at={}, deadline={}",
                         batch_id,
-                        self.state.completion_window,
+                        self.state.poll_completion_window or self.state.completion_window,
                         latest.created_at,
-                        latest.created_at + completion_window_seconds,
+                        latest.created_at + poll_window_seconds,
                     )
                     continue
                 if (
@@ -989,6 +996,7 @@ class BatchEmbeddingManager:
 
                     results.append(result)
                     progressed = True
+                    ingested_batches += 1
 
                     ingested_ts = _now_unix()
                     self.registry.append_batch_event(
@@ -1005,6 +1013,12 @@ class BatchEmbeddingManager:
                             jsonl_path=latest.jsonl_path if latest else None,
                             ingested_at=ingested_ts,
                         )
+                    )
+                    logger.info(
+                        "Processed batch {} ({}/{} available)",
+                        batch_id,
+                        ingested_batches,
+                        total_batches,
                     )
                 elif batch_info.status in _TERMINAL_BATCH_STATUSES:
                     logger.warning(
