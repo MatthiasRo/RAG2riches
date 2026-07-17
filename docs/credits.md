@@ -88,10 +88,10 @@ If you use RAG2riches in research, please cite:
 Roesti, Matthias, From RAGs to (feature) Riches - An Efficient Pipeline for Exploratory Text Analysis (June 29, 2025). Available at SSRN: https://ssrn.com/abstract=5331899 or http://dx.doi.org/10.2139/ssrn.5331899
 
 ```bibtex
-@software{roesti2024rag2riches,
+@software{roesti2026rag2riches,
   title = {RAG2riches: Comparative Retrieval-Augmented Generation for Social Science},
   author = {Roesti, Matthias},
-  year = {2024},
+  year = {2026},
   url = {https://github.com/MatthiasRo/RAG2riches}
 }
 
